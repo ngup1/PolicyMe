@@ -65,4 +65,4 @@ This is a work in progress. More features and documentation coming soon!
 
 ## Developers
 
-Muhammad Hashir, Nilesh Gupta, Danial Khurshid, Orhan Koylu
+Muhammad Hashir, Nilesh Gupta, Danial Khurshid, Orhan Koylu, Yousuf Muhammud
