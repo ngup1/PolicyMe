@@ -26,33 +26,6 @@ PolicyMe is a full-stack application designed to help users discover and underst
 - **Framework**: Spring Boot (Java)
 - **Build Tool**: Maven
 
-## Project Structure
-
-```
-PolicyMe/
-├── front-end/policy-me-frontend/    # Next.js frontend application
-│   ├── src/
-│   │   ├── app/                     # Next.js app directory
-│   │   ├── components/              # React components
-│   │   │   ├── layout/              # Header, Footer
-│   │   │   ├── policy/              # Policy-related components
-│   │   │   └── ui/                  # Reusable UI components
-│   │   ├── hooks/                   # Custom React hooks
-│   │   ├── services/                # API integration services
-│   │   └── types/                   # TypeScript type definitions
-│   └── package.json
-└── back-end/Policyme/               # Spring Boot backend
-    └── src/main/java/com/policyme/
-        └── Policyme/
-            ├── controller/          # REST API endpoints
-            ├── service/             # Business logic
-            ├── entity/              # Data models
-            ├── dto/                 # Data transfer objects
-            ├── config/              # Application configuration
-            ├── security/            # Security configuration
-            └── filter/              # Request/response filters
-```
-
 ## Getting Started
 
 ### Prerequisites
