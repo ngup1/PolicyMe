@@ -2,23 +2,37 @@
 
 // SearchBar component for policy search
 import { useState } from 'react';
+import { searchPolicies } from '@/services/policyService';
 import { Search, X } from 'lucide-react';
 
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
+  onResults?: (data: any, query: string) => void;
 }
 
 export default function SearchBar({
   placeholder = 'Search policies, bills, or topics...',
-  className = ''
+  className = '',
+  onResults
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement search functionality in next sprint
-    console.log('Searching for:', query);
+    if (!query.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await searchPolicies(query);
+      onResults?.(data, query);
+    } catch (err: any) {
+      setError(err?.message || 'Search failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClear = () => {
@@ -49,6 +63,7 @@ export default function SearchBar({
                      transition-all duration-200
                      hover:border-ring/50"
           aria-label="Search policies"
+          disabled={loading}
         />
 
         {/* Clear Button */}
@@ -65,6 +80,13 @@ export default function SearchBar({
           </button>
         )}
       </div>
+
+      {error && (
+        <p className="mt-2 text-sm text-destructive">{error}</p>
+      )}
+      {loading && (
+        <p className="mt-2 text-sm text-muted-foreground">Searching...</p>
+      )}
     </form>
   );
 }

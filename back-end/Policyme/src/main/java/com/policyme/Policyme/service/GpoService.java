@@ -23,9 +23,10 @@ public class GpoService {
 
 
     public Map<String, Object> search(String q) {
-        String url = String.format("%s/search?q=%s", baseUrl, q);
-        if (apiKey != null && !apiKey.isBlank()) {
-            url = url + "&api_key=" + apiKey;
+        // Congress.gov API format: https://api.congress.gov/v3/summaries?api_key=xxx&limit=10
+        String url = String.format("%s?api_key=%s&limit=10", baseUrl, apiKey);
+        if (q != null && !q.isBlank()) {
+            url = url + "&query=" + java.net.URLEncoder.encode(q, java.nio.charset.StandardCharsets.UTF_8);
         }
         return restTemplate.getForObject(url, Map.class);
     }

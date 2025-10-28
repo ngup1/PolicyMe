@@ -8,7 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "../ui/Button";
 import { Send, User, Bot } from "lucide-react";
 
-const AnalysisPanel = () => {
+type SummaryItem = {
+  bill?: { title?: string };
+  text?: string;
+  actionDate?: string;
+};
+
+const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "").trim();
+
+function extractBullets(html: string, maxItems = 4): string[] {
+  const liMatches = Array.from(html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)).map(m => stripHtml(m[1]));
+  if (liMatches.length > 0) {
+    return liMatches.filter(Boolean).slice(0, maxItems);
+  }
+  const text = stripHtml(html);
+  const sentences = text
+    .split(/(?<=[\.!?])\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  return sentences.slice(0, maxItems);
+}
+
+function deriveImpact(text: string): string[] {
+  const t = text.toLowerCase();
+  const items: string[] = [];
+  if (t.includes("subsid")) items.push("May qualify for premium subsidies given income and coverage type.");
+  if (t.includes("prescription") || t.includes("drug")) items.push("Potential reduction in prescription drug costs.");
+  if (t.includes("preventive")) items.push("Improved preventive care coverage and incentives.");
+  if (t.includes("rating") || t.includes("transparen")) items.push("More transparent provider ratings for smarter choices.");
+  if (t.includes("fema")) items.push("Disaster relief continuity may indirectly affect emergency benefits and response.");
+  return items.length > 0 ? items.slice(0, 4) : [
+    "No immediate cost change expected; monitor upcoming rulemaking.",
+    "Provider network quality may shift with new rating systems.",
+    "Check employer plan updates in next enrollment window.",
+  ];
+}
+
+const AnalysisPanel = ({ summaries = [] as SummaryItem[], selectedSummary, onSelect }: { summaries?: SummaryItem[]; selectedSummary?: SummaryItem; onSelect?: (s: SummaryItem) => void }) => {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -65,39 +101,18 @@ const AnalysisPanel = () => {
                 Key Takeaways
               </h3>
               
-              <div className="space-y-4">
-                <div className="border-l-4 border-accent pl-4">
-                  <h4 className="font-semibold mb-2">Universal Coverage</h4>
-                  <p className="text-sm text-muted-foreground">
-                    All citizens will have access to healthcare regardless of pre-existing conditions. 
-                    Income-based subsidies make coverage affordable.
-                  </p>
+              {selectedSummary?.text ? (
+                <div className="space-y-3">
+                  <h4 className="font-semibold">{selectedSummary.bill?.title}</h4>
+                  <ul className="list-disc ml-5 text-sm text-muted-foreground space-y-1">
+                    {extractBullets(selectedSummary.text, 4).map((b, i) => (
+                      <li key={i}>{b}</li>
+                    ))}
+                  </ul>
                 </div>
-                
-                <div className="border-l-4 border-accent pl-4">
-                  <h4 className="font-semibold mb-2">Lower Drug Costs</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Price caps on prescription medications, especially for life-saving drugs, 
-                    will reduce out-of-pocket expenses.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-accent pl-4">
-                  <h4 className="font-semibold mb-2">Quality Focus</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Healthcare providers will be rated on patient outcomes, incentivizing 
-                    preventive care and better treatment.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-accent pl-4">
-                  <h4 className="font-semibold mb-2">Phased Implementation</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Changes roll out over 3 years starting January 2025, 
-                    giving providers and insurers time to adapt.
-                  </p>
-                </div>
-              </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Search and select a bill to see concise takeaways here.</p>
+              )}
             </div>
           </ScrollArea>
         </TabsContent>
@@ -121,21 +136,12 @@ const AnalysisPanel = () => {
               <div className="space-y-4">
                 <div className="rounded-lg border border-border p-4">
                   <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <span className="text-green-600">✓</span> You'll Benefit
+                    <span className="text-green-600">✓</span> Likely Impact
                   </h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground ml-6">
-                    <li>• Eligible for subsidies (saves ~$200/month)</li>
-                    <li>• Lower prescription costs (estimated 30% reduction)</li>
-                    <li>• Better preventive care coverage</li>
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg border border-border p-4">
-                  <h4 className="font-semibold mb-2">What Changes</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground ml-6">
-                    <li>• New provider rating system for better choices</li>
-                    <li>• More transparency in healthcare pricing</li>
-                    <li>• Gradual rollout through 2028</li>
+                  <ul className="space-y-2 text-sm text-muted-foreground ml-6 list-disc">
+                    {deriveImpact(selectedSummary?.text ? stripHtml(selectedSummary.text) : "").map((i, idx) => (
+                      <li key={idx}>{i}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -197,6 +203,6 @@ const AnalysisPanel = () => {
   );
 };
 
-export default function LeftContent() {
-  return <AnalysisPanel />;
+export default function LeftContent({ summaries = [] as SummaryItem[], onSelect }: { summaries?: SummaryItem[]; onSelect?: (s: SummaryItem) => void }) {
+  return <AnalysisPanel summaries={summaries} onSelect={onSelect} />;
 }
