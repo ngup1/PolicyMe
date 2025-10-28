@@ -21,20 +21,6 @@ export default function Header() {
           Policy<span className="text-accent">ME</span>
         </h1>
 
-        <nav>
-          <ul className="flex flex-wrap gap-4 text-sm font-medium">
-            {['Home', 'Browse', 'Archive'].map((link) => (
-              <li key={link}>
-                <a
-                  href="#"
-                  className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent transition-colors"
-                >
-                  {link}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </div>
 
       {/* Trending Issues */}
