@@ -4,6 +4,7 @@ import MainContent from "@/components/layout/MainContent";
 import SearchContainer from "@/components/layout/SearchContainer";
 import ContentGrid from "@/components/layout/ContentGrid";
 import SearchBar from "@/components/ui/SearchBar";
+import Footer from "@/components/layout/Footer";
 import { LeftContent, RightContent } from "@/components/content";
 
 export default function Home() {
@@ -25,6 +26,9 @@ export default function Home() {
           <RightContent />
         </ContentGrid>
       </MainContent>
+      
+      {/* Footer */}
+      <Footer />
     </>
   );
 }
