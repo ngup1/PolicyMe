@@ -4,9 +4,11 @@ import com.policyme.Policyme.model.BillModel.BillResponse;
 import com.policyme.Policyme.repository.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class BillService {
@@ -16,7 +18,7 @@ public class BillService {
     @Value("${CONGRESS_GOV_API_KEY}")
     private String apiKey;
 
-    private static final String fromDate = "2020-01-01";
+    private static final String fromDate = LocalDate.now().minusYears(5).toString();
     private final String toDate = LocalDate.now().toString();
 
     private final int[] congressSessions = {117, 118};
@@ -92,6 +94,9 @@ public class BillService {
                 var offset = 0;
                 while (offset < 1000) {
                     fetchBillsByType(congress, billType, 250, offset);
+                    fetchAllBills(250, offset);
+                    fetchBillsByCongress(congress, 250, offset);
+
                     offset += 250;
                 }
                 fetchBillDetails(congress, billType, billNumber);
@@ -99,5 +104,12 @@ public class BillService {
             System.out.println("Finished all bill types for Congress " + congress);
         }
         System.out.println("All data fetch loops completed successfully!");
+    }
+
+    @Async
+    public CompletableFuture<Void> fetchAllBillDataAsync() {
+        fetchAllBillData();
+        return CompletableFuture.completedFuture(null);
+
     }
 }
