@@ -20,8 +20,8 @@ public class GpoController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> search(@RequestParam String q) {
-        Map<String, Object> result = gpoService.search(q);
+    public ResponseEntity<Map<String, Object>> search(@RequestParam String query) {
+        Map<String, Object> result = gpoService.searchLegislation(query);
         return ResponseEntity.ok(result);
     }
 }
