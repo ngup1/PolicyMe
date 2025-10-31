@@ -6,7 +6,10 @@ import com.policyme.Policyme.service.SummaryService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class StartupEventListener {
@@ -20,8 +23,11 @@ public class StartupEventListener {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationRead() {
-        billService.fetchAllBillData();
-//        summaryService.fetc
+    public void onApplicationReady() {
+        CompletableFuture<Void> bills = billService.fetchAllBillDataAsync();
+        CompletableFuture<Void> summaries = summaryService.fetchAllSummaryDataAsync();
+        CompletableFuture.allOf(bills, summaries).join();
+        System.out.println("Completed both Summary and Bill");
+
     }
 }
