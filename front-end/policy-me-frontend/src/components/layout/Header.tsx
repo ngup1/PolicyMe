@@ -1,6 +1,7 @@
 // Header component
 // Navigation buttons will control content display on main page
 import { Badge } from "../ui/badge";
+import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 const trendingIssues = [ //will change this to mock data, once we get backend and front-end connected
   "Healthcare Reform",
   "Climate Policy",
@@ -21,20 +22,47 @@ export default function Header() {
           Policy<span className="text-accent">ME</span>
         </h1>
 
-        <nav>
-          <ul className="flex flex-wrap gap-4 text-sm font-medium">
-            {['Home', 'Browse', 'Archive'].map((link) => (
-              <li key={link}>
-                <a
-                  href="#"
-                  className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent transition-colors"
-                >
-                  {link}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="flex items-center gap-6">
+          <nav>
+            <ul className="flex flex-wrap gap-4 text-sm font-medium">
+              {['Home', 'Browse', 'Archive'].map((link) => (
+                <li key={link}>
+                  <a
+                    href="#"
+                    className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent transition-colors"
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Authentication Buttons */}
+          <div className="flex items-center gap-3">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-9 h-9"
+                  }
+                }}
+              />
+            </SignedIn>
+          </div>
+        </div>
       </div>
 
       {/* Trending Issues */}
