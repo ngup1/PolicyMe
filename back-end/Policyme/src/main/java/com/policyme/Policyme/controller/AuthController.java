@@ -40,6 +40,6 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.status(201).body(new ApiResponse(true, "User created successfully"));
+        return ResponseEntity.status(201).body(new ApiResponse(true, "User created successfully")); //add the jwt Token here later
     }
 }
