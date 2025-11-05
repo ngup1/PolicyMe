@@ -34,6 +34,7 @@ public class AuthController {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .authProvider(AuthProvider.NONE)
+                .providerId(null)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .build();
 
