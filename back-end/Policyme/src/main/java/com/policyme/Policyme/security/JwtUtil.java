@@ -16,7 +16,9 @@ public class JwtUtil {
     private final Key key;
     private final long expirationTime = 1000 * 60 * 60 * 24; // 1 day
 
-    public JwtUtil(@Value("${JWT_SECRET_KEY}") String secretKey) {
+    public JwtUtil(@Value("${JWT_SECRET_KEY:your-secret-key-min-256-bits-for-production-change-this}") String secretKey) {
+        // Note: For production, set JWT_SECRET_KEY environment variable with a secure random key
+        // The default value is for development only and should be changed
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
