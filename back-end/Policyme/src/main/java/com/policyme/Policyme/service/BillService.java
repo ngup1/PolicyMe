@@ -15,7 +15,7 @@ public class BillService {
     private final WebClient webClient;
     private final BillRepository billRepository;
 
-    @Value("${CONGRESS_GOV_API_KEY}")
+    @Value("${CONGRESS_GOV_API_KEY:}")
     private String apiKey;
 
     private static final String fromDate = LocalDate.now().minusYears(5).toString();
