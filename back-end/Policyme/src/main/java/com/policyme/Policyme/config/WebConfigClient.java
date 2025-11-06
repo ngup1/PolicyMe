@@ -10,13 +10,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebConfigClient {
 
-    @Value("${CONGRESS_GOV_URL}")
+    @Value("${CONGRESS_GOV_URL:https://api.congress.gov/v3}")
     private String baseUrl;
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder
-                .baseUrl("https://api.congress.gov/v3")
+                .baseUrl(baseUrl)
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(configurer ->
                                 configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024) // 16 MB
