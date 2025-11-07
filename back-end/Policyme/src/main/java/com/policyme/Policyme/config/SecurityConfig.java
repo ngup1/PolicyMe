@@ -25,26 +25,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                // Disable sessions because we use JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Disable CSRF since we are not using Cookies for auth
-                .csrf(csrf -> csrf.disable())
-
-
-
-                // OAuth2 Login Flow Configuration
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
-                                userInfo.userService(customOAuth2UserService))  // Create/Find user in DB
-                        .successHandler(oAuth2SuccessHandler)                    // Issue JWT after OAuth success
-                        .failureHandler(oAuth2FailureHandler)                    // Handle OAuth errors
+                                userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
                 );
-
 
         return http.build();
     }
+
 
     // Needed if you use local login (/auth/login)
     @Bean
