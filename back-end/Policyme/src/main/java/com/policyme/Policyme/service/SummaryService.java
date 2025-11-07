@@ -3,6 +3,7 @@ package com.policyme.Policyme.service;
 import com.policyme.Policyme.model.BillModel.BillResponse;
 import com.policyme.Policyme.model.SummariesModel.SummaryResponse;
 import com.policyme.Policyme.repository.SummaryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
 
+@RequiredArgsConstructor
 @Service
 public class SummaryService {
 
@@ -30,11 +32,6 @@ public class SummaryService {
 
 
 
-    @Autowired
-    public SummaryService(WebClient webClient, SummaryRepository summaryRepository) {
-        this.webClient = webClient;
-        this.summaryRepository = summaryRepository;
-    }
 
     public void fetchAllSummaries(int limit, int offset) {
         String url = String.format(

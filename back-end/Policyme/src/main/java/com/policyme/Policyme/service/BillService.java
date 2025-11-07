@@ -2,6 +2,7 @@ package com.policyme.Policyme.service;
 
 import com.policyme.Policyme.model.BillModel.BillResponse;
 import com.policyme.Policyme.repository.BillRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
+@RequiredArgsConstructor
 @Service
 public class BillService {
     private final WebClient webClient;
@@ -25,11 +27,6 @@ public class BillService {
     private final String[] billTypes = {"hr", "s", "hjres", "sjres", "hres", "sres"};
     private final int billNumber = 7000;
 
-    @Autowired
-    public BillService(WebClient webClient, BillRepository billRepository) {
-        this.webClient = webClient;
-        this.billRepository = billRepository;
-    }
 
     public void fetchAllBills(int limit, int offset) {
         String url = String.format(
