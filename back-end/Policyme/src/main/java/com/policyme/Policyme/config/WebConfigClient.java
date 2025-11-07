@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebConfigClient {
 
-    @Value("${CONGRESS_GOV_URL:https://api.congress.gov/v3}")
+    @Value("${CONGRESS_GOV_URL")
     private String baseUrl;
 
     @Bean
