@@ -19,7 +19,7 @@ public class SummaryService {
     private final WebClient webClient;
     private final SummaryRepository summaryRepository;
 
-    @Value("${CONGRESS_GOV_API_KEY:}")
+    @Value("${CONGRESS_GOV_API_KEY}")
     private String apiKey;
     private final String fromDateTime = LocalDate.now().minusYears(5).toString() + "T00:00:00Z";
     private final String toDateTime = LocalDate.now().toString() + "T23:59:59Z";
