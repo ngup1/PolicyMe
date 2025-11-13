@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 
 
-//This is for NON-OAUTH2
 @Builder
 @Data
 public class SignUpRequestDTO {
