@@ -25,29 +25,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String providerId = oAuth2User.getAttribute("sub");
         String email = oAuth2User.getAttribute("email");
 
-        String firstName = null;
-        String lastName = null;
-
-        if (provider.equals("google")) {
-            firstName = oAuth2User.getAttribute("given_name");
-            lastName = oAuth2User.getAttribute("family_name");
-        }
-        else if (provider.equals("apple")) {
-            Map<String, Object> name = oAuth2User.getAttribute("name");
-            if (name != null) { // Only sent on first login
-                firstName = (String) name.get("firstName");
-                lastName = (String) name.get("lastName");
-            }
-        }
-        final String finalFirstName = firstName;
-        final String finalLastName = lastName;
+        final String firstName = oAuth2User.getAttribute("given_name");
+        final String lastName = oAuth2User.getAttribute("family_name");
 
         // Find or create user
         User user = userRepository.findByProviderId(providerId)
                 .orElseGet(() -> userRepository.save(User.builder()
                         .email(email)
-                        .firstName(finalFirstName)
-                        .lastName(finalLastName)
+                        .firstName(firstName)
+                        .lastName(lastName)
                         .authProvider(AuthProvider.valueOf(provider.toUpperCase()))
                         .providerId(providerId)
                         .build()
