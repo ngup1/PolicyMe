@@ -1,12 +1,11 @@
 package com.policyme.Policyme.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LoginResponseDTO {
+public class SignUpResponseDTO {
     private String token;
     private String userId;
     private String email;
