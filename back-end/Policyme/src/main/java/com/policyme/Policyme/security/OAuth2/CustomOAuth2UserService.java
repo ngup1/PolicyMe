@@ -4,6 +4,7 @@ import com.policyme.Policyme.model.UserModel.AuthProvider;
 import com.policyme.Policyme.model.UserModel.User;
 import com.policyme.Policyme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -15,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
+    @Autowired
     private final UserRepository userRepository;
 
     @Override
