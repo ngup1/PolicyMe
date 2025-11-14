@@ -3,10 +3,11 @@ package com.policyme.Policyme.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 
-//This is for NON-OAUTH2
+@Builder
 @Data
 public class SignUpRequestDTO {
     @Email(message = "Email must be valid")
