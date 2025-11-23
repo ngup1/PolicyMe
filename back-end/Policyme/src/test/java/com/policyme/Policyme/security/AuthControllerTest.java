@@ -92,5 +92,32 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").exists());
     }
-    //can add more test cases later
+
+    @Test
+    void loginWithInvalidPassword_ShouldReturn401() throws Exception {
+        var loginRequest = LoginRequestDTO.builder()
+                .email(testUser.getEmail())
+                .password("wrongpassword")
+                .build();
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void signUpWithExistingEmail_ShouldReturn409() throws Exception {
+        var signUpRequest = SignUpRequestDTO.builder()
+                .email(testUser.getEmail())
+                .password("secret123")
+                .firstName("test")
+                .lastName("test")
+                .build();
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signUpRequest)))
+                .andExpect(status().isConflict());
+    }
 }
