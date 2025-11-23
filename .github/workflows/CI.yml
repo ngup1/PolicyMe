@@ -2,7 +2,10 @@ name: CI - Spring Boot
 
 on:
   push:
-    branches: [main]
+    branches: [main, '**']   # '**' matches all branches
+  pull_request:
+    branches: [main]         # optional, runs on PRs to main
+
 
 jobs:
   build:
