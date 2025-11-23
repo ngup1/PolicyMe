@@ -15,6 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
+@Profile("!test")
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -25,7 +27,6 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
 
-    @Profile("!test")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -45,7 +46,6 @@ public class SecurityConfig {
     }
 
 
-    // Needed if you use local login (/auth/login)
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
