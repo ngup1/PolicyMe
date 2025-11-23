@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class AmendmentService {
 
+
     private final WebClient webClient;
     private final AmendmentRepository amendmentRepository;
 
