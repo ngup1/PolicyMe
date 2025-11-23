@@ -9,8 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@PropertySource(value = "file:.env", ignoreResourceNotFound = true)
-
 class PolicymeApplicationTests {
 
 	@Test
