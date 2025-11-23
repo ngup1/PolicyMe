@@ -8,8 +8,8 @@ on:
 
 env:
   JWT_TOKEN: ${{ secrets.JWTKEY }}
-  CONGRESS_API: ${{ secrets.CONGRESSAPI }}
-  CONGRESS_URL: ${{ secrets.CONGRESSURL }}
+  CONGRESS_GOV_API_KEY: ${{ secrets.CONGRESSAPI }}
+  CONGRESS_GOV_URL: ${{ secrets.CONGRESSURL }}
 
 jobs:
   build:
