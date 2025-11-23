@@ -17,8 +17,10 @@ jobs:
           - 27017:27017
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -27,8 +29,10 @@ jobs:
           distribution: temurin
           cache: maven
 
+
       - name: Install netcat
         run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+
 
       - name: Wait for MongoDB
         run: |
@@ -39,6 +43,7 @@ jobs:
           done
           echo "MongoDB is up!"
 
-      - name: Clean and build Maven project
+
+      - name: Build and test
         run: mvn clean verify
         working-directory: back-end/Policyme
