@@ -2,7 +2,7 @@ name: CI - Spring Boot
 
 on:
   push:
-    branches: [main]
+    branches: [main, '**']
   pull_request:
     branches: [main]
 
