@@ -1,4 +1,5 @@
 name: CI - Spring Boot
+
 on:
   push:
     branches: [ main, '**' ]
@@ -23,6 +24,10 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+
+
+      - name: List repo structure
+        run: ls -R
       - name: Build with Maven
         run: mvn -B clean verify
         working-directory: back-end/PolicyMe
