@@ -10,6 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # MongoDB service
     services:
       mongodb:
         image: mongo:7.0
@@ -17,9 +18,11 @@ jobs:
           - 27017:27017
 
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Java
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -27,13 +30,21 @@ jobs:
           distribution: temurin
           cache: maven
 
+      # 3️⃣ Install netcat (for waiting for MongoDB)
+      - name: Install netcat
+        run: sudo apt-get update && sudo apt-get install -y netcat
+
+      # 4️⃣ Wait for MongoDB to be ready
       - name: Wait for MongoDB
         run: |
-          echo "Waiing for MongoDB..."
+          echo "Waiting for MongoDB..."
           until nc -z mongodb 27017; do
+            echo "MongoDB is unavailable - sleeping"
             sleep 2
           done
+          echo "MongoDB is up!"
 
+      # 5️⃣ Build and test with Maven
       - name: Build and test
         run: mvn clean verify
         working-directory: back-end/Policyme
