@@ -10,7 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # MongoDB service
     services:
       mongodb:
         image: mongo:7.0
@@ -18,7 +17,7 @@ jobs:
           - 27017:27017
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -30,21 +29,21 @@ jobs:
           distribution: temurin
           cache: maven
 
-      # 3️⃣ Install netcat (for waiting for MongoDB)
+      # 3️⃣ Install netcat (needed to check MongoDB availability)
       - name: Install netcat
-        run: sudo apt-get update && sudo apt-get install -y netcat
+        run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
 
       # 4️⃣ Wait for MongoDB to be ready
       - name: Wait for MongoDB
         run: |
           echo "Waiting for MongoDB..."
-          until nc -z mongodb 27017; do
+          until nc -z localhost 27017; do
             echo "MongoDB is unavailable - sleeping"
             sleep 2
           done
           echo "MongoDB is up!"
 
-      # 5️⃣ Build and test with Maven
+      # 5️⃣ Build and test the Spring Boot app
       - name: Build and test
         run: mvn clean verify
         working-directory: back-end/Policyme
