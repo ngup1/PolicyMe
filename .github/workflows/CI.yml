@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  JWT_TOKEN: ${{ secrets.JWTKEY }}
+  JWT_SECRET_KEY: ${{ secrets.JWTKEY }}
   CONGRESS_GOV_API_KEY: ${{ secrets.CONGRESSAPI }}
   CONGRESS_GOV_URL: ${{ secrets.CONGRESSURL }}
 
