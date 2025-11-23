@@ -6,16 +6,19 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  SPRING_PROFILES_ACTIVE: int
-
 jobs:
   build:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+
+    services:
+      mongo:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: --bind_ip_all
 
     steps:
       - name: Checkout code
