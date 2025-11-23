@@ -2,7 +2,7 @@ name: CI - Spring Boot
 
 on:
   push:
-    branches: [main, '**']
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -15,11 +15,6 @@ jobs:
         image: mongo:7.0
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -32,16 +27,10 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install mongosh
-        run: |
-          curl --output mongosh.deb https://downloads.mongodb.com/compass/mongodb-mongosh_2.2.1_amd64.deb
-          sudo dpkg -i mongosh.deb
-          mongosh --version
-
       - name: Wait for MongoDB
         run: |
           echo "Waiting for MongoDB..."
-          until mongosh 'mongodb://mongodb:27017/?directConnection=true' --eval 'db.runCommand({ ping: 1 })'; do
+          until nc -z mongodb 27017; do
             sleep 2
           done
 
