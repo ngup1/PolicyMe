@@ -1,7 +1,9 @@
-// Header component
-// Navigation buttons will control content display on main page
+'use client';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Badge } from "../ui/badge";
-const trendingIssues = [ //will change this to mock data, once we get backend and front-end connected
+
+const trendingIssues = [
   "Healthcare Reform",
   "Climate Policy",
   "Tax Legislation",
@@ -9,44 +11,54 @@ const trendingIssues = [ //will change this to mock data, once we get backend an
   "Immigration Policy",
 ];
 
-
-
 export default function Header() {
+  const router = useRouter();
+  const [username, setUsername] = useState("Orhan"); // replace later with actual user state
+
+  const handleNavigate = () => {
+    router.push("/demographics");
+  };
+
   return (
-  <header className="border-b border-border bg-background">
-    <div className="container mx-auto py-3">
-      {/* Logo + Navigation */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-6">
-        <h1 className="text-3xl font-serif font-bold tracking-tight mb-2 md:mb-0">
-          Policy<span className="text-accent">ME</span>
-        </h1>
+    <header className="border-b border-border bg-background">
+      <div className="container mx-auto py-3">
+        {/* Logo + Welcome Text */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-6">
+          <h1 className="text-3xl font-serif font-bold tracking-tight mb-2 md:mb-0">
+            Policy<span className="text-red-700">Me</span>
+          </h1>
 
-      </div>
-
-      {/* Trending Issues */}
-      <div className="border-t border-border pt-3">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Trending Issues
-          </span>
-          <div className="h-px flex-1 bg-border"></div>
+          {/* Welcome text (Top-right) */}
+          <div
+            onClick={handleNavigate}
+            className="text-xl font-serif font-bold tracking-tight text-black hover:text-accent transition-colors cursor-pointer"
+          >
+            Welcome, {username}
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {trendingIssues.map((issue) => (
-            <Badge
-              key={issue}
-              variant="outline"
-              className="cursor-pointer hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors transform hover:scale-105 animate__animated animate__fadeIn"
-            >
-              {issue}
-            </Badge>
-          ))}
+        {/* Trending Issues */}
+        <div className="border-t border-border pt-3">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Trending Issues
+            </span>
+            <div className="h-px flex-1 bg-border"></div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {trendingIssues.map((issue) => (
+              <Badge
+                key={issue}
+                variant="outline"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors transform hover:scale-105 animate__animated animate__fadeIn"
+              >
+                {issue}
+              </Badge>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  </header>
-);
-
+    </header>
+  );
 }
-

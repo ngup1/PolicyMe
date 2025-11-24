@@ -1,0 +1,49 @@
+name: CI - Spring Boot
+
+on:
+  push:
+    branches: [main, '**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "23"
+          distribution: temurin
+          cache: maven
+
+
+      - name: Install netcat
+        run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+
+
+      - name: Wait for MongoDB
+        run: |
+          echo "Waiting for MongoDB..."
+          until nc -z localhost 27017; do
+            echo "MongoDB is unavailable - sleeping"
+            sleep 2
+          done
+          echo "MongoDB is up!"
+
+
+      - name: Build and test
+        run: mvn clean verify
+        working-directory: back-end/Policyme
