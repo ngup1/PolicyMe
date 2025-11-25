@@ -1,10 +1,11 @@
 package com.policyme.Policyme.config;
 
 
-import com.policyme.Policyme.security.OAuth2.CustomOAuth2UserService;
-import com.policyme.Policyme.security.OAuth2.OAuth2FailureHandler;
-import com.policyme.Policyme.security.OAuth2.OAuth2SuccessHandler;
+import com.policyme.Policyme.service.OAuth2.OAuth2FailureHandler;
+import com.policyme.Policyme.service.OAuth2.OAuth2SuccessHandler;
+import com.policyme.Policyme.service.OAuth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -30,6 +31,10 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
 
+
+
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -37,15 +42,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        // Open endpoints
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**", "/login/oauth2/code/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
-                        .userInfoEndpoint(userInfo ->
-                                userInfo.userService(customOAuth2UserService))
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .redirectionEndpoint(redir -> redir
+                                .baseUri("/login/oauth2/*") // Handles multiple providers like google, github
+                        )
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler)
                 );
+
 
         return http.build();
     }
@@ -53,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001", "http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

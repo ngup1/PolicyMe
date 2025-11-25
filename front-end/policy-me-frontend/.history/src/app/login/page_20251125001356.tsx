@@ -7,7 +7,6 @@ import { authService } from '@/services/authService';
 import { LoginRequest } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/context/AuthProvider';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +16,6 @@ export default function LoginPage() {
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { logIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,9 +23,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await logIn(formData);
+      const response = await authService.login(formData);
       
-
+      // Store JWT token and user info
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify({
+        userId: response.userId,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+      }));
       
       // Redirect to home page
       router.push('/');

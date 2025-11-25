@@ -3,36 +3,44 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { authService } from '@/services/authService';
-import { LoginRequest } from '@/types';
+import { SignUpRequest } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthProvider';
+import { API_BASE_URL } from '@/constants';
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<LoginRequest>({
+  const [formData, setFormData] = useState<SignUpRequest>({
     email: '',
     password: '',
+    firstName: '',
+    lastName: '',
   });
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { logIn } = useAuth();
+  const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate passwords match
+    if (formData.password !== confirmPassword) {
+      setError('Passwords do not match. Please try again.');
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      await logIn(formData);
-      
-
+      await signUp(formData);
       
       // Redirect to home page
       router.push('/');
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+      setError(err.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -46,18 +54,30 @@ export default function LoginPage() {
     }));
   };
 
-  const handleGoogleSignIn = () => {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081';
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+  const handleGoogleSignIn = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/oauth2/authorization/google`, {
+        method: "GET",
+        credentials: "include", // send cookies if needed
+      });
+      const data = await response.json();
+      console.log("Login response:", data);
+
+      // You can store the JWT in localStorage / context
+      localStorage.setItem("token", data.token);
+    } catch (err) {
+      console.error("OAuth2 login failed", err);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground">Sign in to your account</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
+            <p className="text-muted-foreground">Sign up to get started</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -68,6 +88,42 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
+                    First Name
+                  </label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    placeholder="First name"
+                    className="w-full"
+                    disabled={loading}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-2">
+                    Last Name
+                  </label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    placeholder="Last name"
+                    className="w-full"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                   Email
@@ -96,10 +152,42 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  placeholder="Enter your password"
+                  minLength={8}
+                  placeholder="At least 8 characters"
                   className="w-full"
                   disabled={loading}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Password must be at least 8 characters long
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
+                  Confirm Password
+                </label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  placeholder="Re-enter your password"
+                  className="w-full"
+                  disabled={loading}
+                />
+                {confirmPassword && formData.password !== confirmPassword && (
+                  <p className="text-xs text-destructive mt-1">
+                    Passwords do not match
+                  </p>
+                )}
+                {confirmPassword && formData.password === confirmPassword && (
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    Passwords match
+                  </p>
+                )}
               </div>
             </div>
 
@@ -108,7 +196,7 @@ export default function LoginPage() {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Creating account...' : 'Sign Up'}
             </Button>
 
             <div className="relative">
@@ -145,13 +233,13 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              Sign in with Google
+              Sign up with Google
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link href="/signup" className="text-primary hover:underline font-medium">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/login" className="text-primary hover:underline font-medium">
+                Sign in
               </Link>
             </div>
           </form>
