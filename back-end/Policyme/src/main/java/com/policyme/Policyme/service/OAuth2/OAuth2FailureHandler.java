@@ -15,8 +15,7 @@ import java.nio.charset.StandardCharsets;
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
 
-    @Value("${frontend.url}")
-    private String frontEndUrl;
+    private String frontEndUrl = "http://localhost:3000/";
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,

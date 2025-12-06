@@ -23,8 +23,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${frontend.url}")
-    private String frontEndUrl;
+
+
+    private String frontEndUrl = "http://localhost:3000/";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
