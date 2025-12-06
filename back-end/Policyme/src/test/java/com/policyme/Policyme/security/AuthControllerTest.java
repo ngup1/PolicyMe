@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -42,6 +43,10 @@ class AuthControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
 
     @MockBean
     private ClientRegistrationRepository clientRegistrationRepository;
