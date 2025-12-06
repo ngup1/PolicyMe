@@ -44,8 +44,6 @@ class AuthControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @MockBean
-    private AuthenticationManager authenticationManager;
 
 
     @MockBean
