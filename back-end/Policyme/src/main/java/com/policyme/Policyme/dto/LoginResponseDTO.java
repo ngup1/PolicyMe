@@ -8,10 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginResponseDTO {
     private String token;
-    private String userId;
-    private String email;
-    private String firstName;
-    private String lastName;
+    private UserDTO user;
     private boolean success;
     private String message;
 }

@@ -7,10 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SignUpResponseDTO {
     private String token;
-    private String userId;
-    private String email;
-    private String firstName;
-    private String lastName;
+    private UserDTO user; //simplified this will hold all the information of the user;
     private boolean success;
     private String message;
 }
