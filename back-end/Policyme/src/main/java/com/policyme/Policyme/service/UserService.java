@@ -1,26 +1,27 @@
 package com.policyme.Policyme.service;
 
 
-import com.policyme.Policyme.dto.LoginRequestDTO;
-import com.policyme.Policyme.dto.LoginResponseDTO;
-import com.policyme.Policyme.dto.SignUpRequestDTO;
-import com.policyme.Policyme.dto.SignUpResponseDTO;
+import com.policyme.Policyme.dto.*;
 import com.policyme.Policyme.exception.EmailAlreadyExistsException;
 import com.policyme.Policyme.exception.InvalidCredentialsException;
 import com.policyme.Policyme.model.UserModel.AuthProvider;
 import com.policyme.Policyme.model.UserModel.User;
 import com.policyme.Policyme.repository.UserRepository;
+import com.policyme.Policyme.security.CustomUserDetails;
 import com.policyme.Policyme.security.JwtUtil;
 import io.jsonwebtoken.Jwt;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 @AllArgsConstructor
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -30,6 +31,14 @@ public class UserService {
     JwtUtil jwtUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+    @Override
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        return new CustomUserDetails(user);
+    }
 
 
     public SignUpResponseDTO registerUser(SignUpRequestDTO request) {
@@ -48,12 +57,11 @@ public class UserService {
 
         String token = jwtUtil.generateJwtToken(user.getUserId());
 
+        UserDTO userDto = new UserDTO(user);
+
         return new SignUpResponseDTO(
                 token,
-                user.getUserId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
+                userDto,
                 true,
                 "User created successfully"
         );
@@ -69,13 +77,11 @@ public class UserService {
         }
 
         String token = jwtUtil.generateJwtToken(user.getUserId());
+        UserDTO userDto = new UserDTO(user);
 
         return new LoginResponseDTO(
                 token,
-                user.getUserId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
+                userDto,
                 true,
                 "User authenticated successfully"
         );

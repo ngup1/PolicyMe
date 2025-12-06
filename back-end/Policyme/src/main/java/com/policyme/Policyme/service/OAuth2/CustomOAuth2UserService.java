@@ -27,6 +27,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String provider = userRequest.getClientRegistration().getRegistrationId();
         String providerId = oAuth2User.getAttribute("sub");
         String email = oAuth2User.getAttribute("email");
+        String profileUrl = oAuth2User.getAttribute("picture");
+        System.out.println("profileUrl" + profileUrl);
 
         final String firstName = oAuth2User.getAttribute("given_name");
         final String lastName = oAuth2User.getAttribute("family_name");
@@ -50,6 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .firstName(firstName)
                         .lastName(lastName)
                         .authProvider(AuthProvider.valueOf(provider.toUpperCase()))
+                        .profilePicture(profileUrl)
                         .providerId(providerId)
                         .build()
                 ));
