@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Badge } from "../ui/badge";
+import { BookOpen, Menu, X } from 'lucide-react';
 
 const trendingIssues = [
   "Healthcare Reform",
@@ -13,45 +14,87 @@ const trendingIssues = [
 
 export default function Header() {
   const router = useRouter();
-  const [username, setUsername] = useState("Orhan"); // replace later with actual user state
-
-  const handleNavigate = () => {
-    router.push("/demographics");
-  };
+  const [isLoggedIn] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="border-b border-border bg-background">
-      <div className="container mx-auto py-3">
-        {/* Logo + Welcome Text */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-6">
-          <h1 className="text-3xl font-serif font-bold tracking-tight mb-2 md:mb-0">
-            Policy<span className="text-red-700">Me</span>
-          </h1>
-
-          {/* Welcome text (Top-right) */}
-          <div
-            onClick={handleNavigate}
-            className="text-xl font-serif font-bold tracking-tight text-black hover:text-accent transition-colors cursor-pointer"
+    <header className="bg-white/80 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div 
+            className="flex items-center gap-2.5 cursor-pointer group" 
+            onClick={() => router.push('/')}
           >
-            Welcome, {username}
+            <div 
+              className="w-9 h-9 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105" 
+              style={{ backgroundColor: '#00132B' }}
+            >
+              <BookOpen className="w-5 h-5" style={{ color: '#DFE4EA' }} />
+            </div>
+            <span className="text-lg font-semibold" style={{ color: '#00132B' }}>
+              Open Politic
+            </span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {['Explore', 'How It Works', 'About'].map((item) => (
+              <a 
+                key={item}
+                href="#" 
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
+
+          {/* Auth Actions */}
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
+              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2">
+                My Profile
+              </button>
+            ) : (
+              <>
+                <button 
+                  onClick={() => router.push('/login')}
+                  className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2"
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={() => router.push('/signup')}
+                  className="text-sm font-medium px-4 py-2 rounded-lg text-white transition-all hover:opacity-90 hover:shadow-lg"
+                  style={{ backgroundColor: '#00132B' }}
+                >
+                  Get Started
+                </button>
+              </>
+            )}
+            
+            {/* Mobile menu button */}
+            <button 
+              className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
-        {/* Trending Issues */}
-        <div className="border-t border-border pt-3">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Trending Issues
-            </span>
-            <div className="h-px flex-1 bg-border"></div>
-          </div>
-
+        {/* Trending - Desktop */}
+        <div className="hidden md:flex items-center gap-3 pb-3">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Trending
+          </span>
           <div className="flex flex-wrap gap-2">
             {trendingIssues.map((issue) => (
               <Badge
                 key={issue}
-                variant="outline"
-                className="cursor-pointer hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors transform hover:scale-105 animate__animated animate__fadeIn"
+                variant="secondary"
+                className="cursor-pointer text-xs font-normal hover:bg-muted/80 transition-colors"
               >
                 {issue}
               </Badge>
@@ -59,6 +102,21 @@ export default function Header() {
           </div>
         </div>
       </div>
+      
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border bg-white px-6 py-4 space-y-2">
+          {['Explore', 'How It Works', 'About'].map((item) => (
+            <a 
+              key={item}
+              href="#" 
+              className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            >
+              {item}
+            </a>
+          ))}
+        </div>
+      )}
     </header>
   );
 }
