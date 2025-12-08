@@ -36,6 +36,8 @@ public class User {
 
     private String providerId;
 
+    private String profilePicture;
+
     @CreatedDate
     private Instant createdDate;
 
