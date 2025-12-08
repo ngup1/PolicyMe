@@ -1,8 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Badge } from "../ui/badge";
-import { BookOpen, Menu, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
+import { Button } from '../ui/Button';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { BookOpen } from 'lucide-react';
 
 const trendingIssues = [
   "Healthcare Reform",
@@ -14,8 +21,7 @@ const trendingIssues = [
 
 export default function Header() {
   const router = useRouter();
-  const [isLoggedIn] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logOut, formatDate } = useAuth();
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
@@ -37,55 +43,67 @@ export default function Header() {
             </span>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {['Explore', 'How It Works', 'About'].map((item) => (
-              <a 
-                key={item}
-                href="#" 
-                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-              >
-                {item}
-              </a>
-            ))}
-          </nav>
-
           {/* Auth Actions */}
           <div className="flex items-center gap-2">
-            {isLoggedIn ? (
-              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2">
-                My Profile
-              </button>
+            {user ? (
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <Button variant="link">Welcome, {user.firstName}</Button>
+                </HoverCardTrigger>
+
+                <HoverCardContent className="w-80">
+                  <div className="flex flex-col gap-2 items-center">
+                    <Avatar>
+                      <AvatarImage src={user.profilePicture} alt={user.firstName} />
+                      <AvatarFallback>
+                        {`${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <p className="text-sm font-semibold">
+                      {user.firstName} {user.lastName}
+                    </p>
+
+                    <p className="text-xs text-muted-foreground">
+                      Member since: {formatDate(user.createdDate)}
+                    </p>
+
+                    <div className="flex gap-2 mt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => router.push("/demographics")}
+                      >
+                        Edit Profile
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => logOut()}>
+                        Log Out
+                      </Button>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             ) : (
               <>
-                <button 
+                <Button 
+                  variant="ghost"
                   onClick={() => router.push('/login')}
-                  className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2"
                 >
                   Sign In
-                </button>
-                <button 
+                </Button>
+                <Button 
                   onClick={() => router.push('/signup')}
-                  className="text-sm font-medium px-4 py-2 rounded-lg text-white transition-all hover:opacity-90 hover:shadow-lg"
                   style={{ backgroundColor: '#00132B' }}
                 >
                   Get Started
-                </button>
+                </Button>
               </>
             )}
-            
-            {/* Mobile menu button */}
-            <button 
-              className="md:hidden p-2 text-muted-foreground hover:text-foreground"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
         </div>
 
-        {/* Trending - Desktop */}
-        <div className="hidden md:flex items-center gap-3 pb-3">
+        {/* Trending */}
+        <div className="flex items-center gap-3 pb-3">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Trending
           </span>
@@ -102,21 +120,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-      
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-white px-6 py-4 space-y-2">
-          {['Explore', 'How It Works', 'About'].map((item) => (
-            <a 
-              key={item}
-              href="#" 
-              className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-      )}
     </header>
   );
 }
