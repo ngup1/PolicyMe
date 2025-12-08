@@ -1,31 +1,74 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
-import { BookOpen, User, MapPin, DollarSign, GraduationCap, Shield } from 'lucide-react';
+import { User, MapPin, DollarSign, GraduationCap, Shield, Briefcase, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
+
+// Demographics type matching backend DTO
+export interface Demographics {
+  age: number | null;
+  state: string;
+  incomeBracket: 'low' | 'middle' | 'high' | '';
+  veteran: boolean;
+  student: boolean;
+  smallBusinessOwner: boolean;
+}
 
 export default function DemographicsPage() {
-  const [form, setForm] = useState({
-    age: '',
-    gender: '',
-    income: 50000,
+  const router = useRouter();
+  const { user } = useAuth();
+  const [saved, setSaved] = useState(false);
+  
+  const [form, setForm] = useState<Demographics>({
+    age: null,
     state: '',
-    student: 'no',
-    veteran: 'no',
+    incomeBracket: '',
+    veteran: false,
+    student: false,
+    smallBusinessOwner: false,
   });
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  // Load saved demographics on mount
+  useEffect(() => {
+    const savedDemo = localStorage.getItem('demographics');
+    if (savedDemo) {
+      try {
+        setForm(JSON.parse(savedDemo));
+      } catch (e) {
+        console.error('Failed to parse saved demographics');
+      }
+    }
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setForm((prev) => ({ ...prev, [name]: checked }));
+    } else if (name === 'age') {
+      setForm((prev) => ({ ...prev, [name]: value ? parseInt(value) : null }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+    setSaved(false);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Demographic Data:', form);
-    alert('Demographic information saved!');
+    // Save to localStorage
+    localStorage.setItem('demographics', JSON.stringify(form));
+    setSaved(true);
+    
+    // Redirect to home after a short delay
+    setTimeout(() => {
+      router.push('/');
+    }, 1500);
   };
 
   const states = [
@@ -60,7 +103,7 @@ export default function DemographicsPage() {
 
           <Card className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Age & Gender Row */}
+              {/* Age & State Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
@@ -71,7 +114,7 @@ export default function DemographicsPage() {
                     name="age"
                     type="number"
                     placeholder="Enter your age"
-                    value={form.age}
+                    value={form.age ?? ''}
                     onChange={handleChange}
                     className="w-full"
                   />
@@ -79,112 +122,120 @@ export default function DemographicsPage() {
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    Gender
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                    State
                   </label>
                   <select
-                    name="gender"
-                    value={form.gender}
+                    name="state"
+                    value={form.state}
                     onChange={handleChange}
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="nonbinary">Non-binary</option>
-                    <option value="preferNot">Prefer not to say</option>
+                    <option value="">Select state</option>
+                    {states.map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
-              {/* State */}
+              {/* Income Bracket */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  State
+                <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-3">
+                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  Income Bracket
                 </label>
-                <select
-                  name="state"
-                  value={form.state}
-                  onChange={handleChange}
-                  className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">Select your state</option>
-                  {states.map((state) => (
-                    <option key={state} value={state}>
-                      {state}
-                    </option>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'low', label: 'Under $50K', desc: 'Low income' },
+                    { value: 'middle', label: '$50K - $150K', desc: 'Middle income' },
+                    { value: 'high', label: 'Over $150K', desc: 'High income' },
+                  ].map((bracket) => (
+                    <label
+                      key={bracket.value}
+                      className={`relative flex flex-col items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        form.incomeBracket === bracket.value
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-muted-foreground/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="incomeBracket"
+                        value={bracket.value}
+                        checked={form.incomeBracket === bracket.value}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-sm font-medium">{bracket.label}</span>
+                      <span className="text-xs text-muted-foreground">{bracket.desc}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
 
-              {/* Income Slider */}
+              {/* Status Toggles */}
               <div>
-                <label className="flex items-center justify-between text-sm font-medium text-foreground mb-3">
-                  <span className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-muted-foreground" />
-                    Annual Income
-                  </span>
-                  <span className="text-primary font-semibold">
-                    ${form.income.toLocaleString()}
-                  </span>
+                <label className="text-sm font-medium text-foreground mb-3 block">
+                  Status (check all that apply)
                 </label>
-                <input
-                  type="range"
-                  name="income"
-                  min="20000"
-                  max="200000"
-                  step="10000"
-                  value={form.income}
-                  onChange={handleChange}
-                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                  style={{ accentColor: '#00132B' }}
-                />
-                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>$20K</span>
-                  <span>$200K+</span>
-                </div>
-              </div>
-
-              {/* Student & Veteran Row */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                    <GraduationCap className="w-4 h-4 text-muted-foreground" />
-                    Student Status
-                  </label>
-                  <select
-                    name="student"
-                    value={form.student}
-                    onChange={handleChange}
-                    className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                <div className="grid grid-cols-3 gap-3">
+                  <label
+                    className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      form.student ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50'
+                    }`}
                   >
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                    <Shield className="w-4 h-4 text-muted-foreground" />
-                    Veteran Status
+                    <input
+                      type="checkbox"
+                      name="student"
+                      checked={form.student}
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    <GraduationCap className={`w-5 h-5 ${form.student ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-medium">Student</span>
                   </label>
-                  <select
-                    name="veteran"
-                    value={form.veteran}
-                    onChange={handleChange}
-                    className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+
+                  <label
+                    className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      form.veteran ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50'
+                    }`}
                   >
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
+                    <input
+                      type="checkbox"
+                      name="veteran"
+                      checked={form.veteran}
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    <Shield className={`w-5 h-5 ${form.veteran ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-medium">Veteran</span>
+                  </label>
+
+                  <label
+                    className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      form.smallBusinessOwner ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/50'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      name="smallBusinessOwner"
+                      checked={form.smallBusinessOwner}
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    <Briefcase className={`w-5 h-5 ${form.smallBusinessOwner ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-medium">Small Biz</span>
+                  </label>
                 </div>
               </div>
 
               {/* Info Box */}
               <div className="bg-muted/50 rounded-lg p-4 border border-border">
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Why we ask:</strong> This information helps us show you how policies specifically impact people like you. Your data is never shared.
+                  <strong className="text-foreground">Why we ask:</strong> This helps us show how policies specifically impact people like you. Your data stays on your device.
                 </p>
               </div>
 
@@ -192,9 +243,16 @@ export default function DemographicsPage() {
               <Button
                 type="submit"
                 className="w-full"
-                style={{ backgroundColor: '#00132B' }}
+                style={{ backgroundColor: saved ? '#22c55e' : '#00132B' }}
               >
-                Save Profile
+                {saved ? (
+                  <span className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Saved! Redirecting...
+                  </span>
+                ) : (
+                  'Save Profile'
+                )}
               </Button>
             </form>
           </Card>

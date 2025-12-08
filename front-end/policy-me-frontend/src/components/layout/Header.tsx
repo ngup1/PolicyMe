@@ -113,6 +113,7 @@ export default function Header() {
                 key={issue}
                 variant="secondary"
                 className="cursor-pointer text-xs font-normal hover:bg-muted/80 transition-colors"
+                onClick={() => router.push(`/?search=${encodeURIComponent(issue)}`)}
               >
                 {issue}
               </Badge>

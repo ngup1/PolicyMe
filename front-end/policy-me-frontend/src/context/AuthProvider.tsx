@@ -133,7 +133,7 @@ useEffect(() => {
         localStorage.removeItem("jwtToken");
         setUser(null);
         setJwtToken(null);
-        router.push('/home');
+        router.push('/');
     };
 
 
@@ -147,6 +147,9 @@ useEffect(() => {
             setJwtToken(data.token);
 
             toast.success(data.message);
+            
+            // Redirect new users to demographics to personalize their experience
+            router.push('/demographics');
 
         } catch (error) { //need better error handling here
             console.error(error);
