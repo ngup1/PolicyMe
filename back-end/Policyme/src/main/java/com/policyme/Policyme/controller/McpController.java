@@ -83,6 +83,17 @@ public class McpController {
                                 ),
                                 "required", List.of("billId", "demographics")
                         )
+                ),
+                new ToolDescriptor(
+                        "ask_ai",
+                        "Ask the AI assistant a question about legislation or policy",
+                        Map.of(
+                                "type", "object",
+                                "properties", Map.of(
+                                        "question", Map.of("type", "string", "description", "The question to ask the AI")
+                                ),
+                                "required", List.of("question")
+                        )
                 )
         );
         return ResponseEntity.ok(tools);
@@ -116,6 +127,11 @@ public class McpController {
                     ExplainPolicyImpactRequest req = objectMapper.convertValue(params, ExplainPolicyImpactRequest.class);
                     String explanation = mcpTools.explainPolicyImpact(req.getBillId(), req.getDemographics());
                     yield explanation;
+                }
+                case "ask_ai" -> {
+                    AskAIRequest req = objectMapper.convertValue(params, AskAIRequest.class);
+                    String answer = mcpTools.askAI(req.getQuestion());
+                    yield answer;
                 }
                 default -> throw new IllegalArgumentException("Unknown tool: " + toolName);
             };

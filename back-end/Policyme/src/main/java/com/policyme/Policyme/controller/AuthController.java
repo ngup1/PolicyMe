@@ -61,5 +61,43 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/demographics")
+    public ResponseEntity<UserDTO> updateDemographics(
+            Authentication authentication,
+            @RequestBody DemographicsDTO demographics) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = customUserDetails.getUser();
+
+        User updatedUser = userService.updateUserDemographics(user.getUserId(), demographics);
+        UserDTO userDTO = new UserDTO(updatedUser);
+
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @GetMapping("/demographics")
+    public ResponseEntity<DemographicsDTO> getDemographics(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = customUserDetails.getUser();
+
+        DemographicsDTO dto = new DemographicsDTO(
+                user.getAge(),
+                user.getState(),
+                user.getIncomeBracket(),
+                user.getVeteran(),
+                user.getStudent(),
+                user.getSmallBusinessOwner()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
 }
 
