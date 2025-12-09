@@ -49,12 +49,14 @@ export interface User {
 
 }
 
-export interface Demographics {
-  age: number | null;
-  zip: number;
+
+export interface Demographic{
+  age: number;
   state: string;
-  incomeBracket: 'low' | 'middle' | 'high' | '';
+  incomeBracket: string;
   veteran: boolean;
   student: boolean;
   smallBusinessOwner: boolean;
+
+
 }

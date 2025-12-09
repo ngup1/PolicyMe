@@ -26,7 +26,6 @@ export default function DemographicsPage() {
     veteran: false,
     student: false,
     smallBusinessOwner: false,
-    zip: 63021,
   });
 
   // Load saved demographics on mount

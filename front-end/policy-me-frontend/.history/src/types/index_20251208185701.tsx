@@ -51,7 +51,6 @@ export interface User {
 
 export interface Demographics {
   age: number | null;
-  zip: number;
   state: string;
   incomeBracket: 'low' | 'middle' | 'high' | '';
   veteran: boolean;

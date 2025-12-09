@@ -1,4 +1,4 @@
-import { Demographics } from "@/types";
+import { Demographic } from "@/types";
 import { totalmem } from "os";
 import { createContext } from "react";
 import { useState, useContext } from "react";
@@ -10,7 +10,7 @@ import api from "@/api/axios";
 export type UserContextType = {
   user: string | null;
   setUser: (val: string | null) => void;
-  setDemographic: (val: Demographics) => void;
+  setDemographic: (val: Demographic) => void;
 
 };
 
@@ -22,14 +22,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
 
 
-  const setDemographic = async (val: Demographics) => {
+  const setDemographic = async (val: Demographic) => {
     try{
-      const token = localStorage.getItem("jwtToken");
-      const response = await api.post("/auth/demographic", {...val}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post("/auth/demographic", {...val});
       const data = response.data;
       toast.success(data.message)
     }

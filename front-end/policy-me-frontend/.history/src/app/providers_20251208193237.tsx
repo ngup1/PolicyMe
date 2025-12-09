@@ -1,5 +1,3 @@
-"use client"
-
 import { AuthProvider } from "@/context/AuthProvider";
 import { UserProvider } from "@/context/UserProvider";
 
