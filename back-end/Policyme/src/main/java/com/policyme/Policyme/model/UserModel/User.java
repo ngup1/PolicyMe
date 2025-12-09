@@ -38,6 +38,14 @@ public class User {
 
     private String profilePicture;
 
+    // Demographics fields for personalized policy impact analysis
+    private Integer age;
+    private String state;
+    private String incomeBracket;
+    private Boolean veteran;
+    private Boolean student;
+    private Boolean smallBusinessOwner;
+
     @CreatedDate
     private Instant createdDate;
 

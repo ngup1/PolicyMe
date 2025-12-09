@@ -123,7 +123,7 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={logInViaOAuth2}
+              onClick={handleGoogleSignIn}
               disabled={loading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">

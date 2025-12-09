@@ -88,9 +88,30 @@ public class UserService implements UserDetailsService {
 
     }
 
+    public User updateUserDemographics(String userId, DemographicsDTO demographics) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
 
+        if (demographics.getAge() != null) {
+            user.setAge(demographics.getAge());
+        }
+        if (demographics.getState() != null) {
+            user.setState(demographics.getState());
+        }
+        if (demographics.getIncomeBracket() != null) {
+            user.setIncomeBracket(demographics.getIncomeBracket());
+        }
+        if (demographics.getVeteran() != null) {
+            user.setVeteran(demographics.getVeteran());
+        }
+        if (demographics.getStudent() != null) {
+            user.setStudent(demographics.getStudent());
+        }
+        if (demographics.getSmallBusinessOwner() != null) {
+            user.setSmallBusinessOwner(demographics.getSmallBusinessOwner());
+        }
 
-
-
+        return userRepository.save(user);
+    }
 
 }

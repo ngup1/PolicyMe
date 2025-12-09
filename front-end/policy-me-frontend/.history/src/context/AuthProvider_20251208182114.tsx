@@ -133,7 +133,7 @@ useEffect(() => {
         localStorage.removeItem("jwtToken");
         setUser(null);
         setJwtToken(null);
-        router.push('/');
+        router.push('/home');
     };
 
 

@@ -49,4 +49,11 @@ public class PolicyMcpTools {
         }
         return impactService.explainImpact(billId, demographics);
     }
+
+    public String askAI(String question) {
+        if (question == null || question.isBlank()) {
+            return "question is required";
+        }
+        return aiService.ask(question);
+    }
 }

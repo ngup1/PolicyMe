@@ -109,11 +109,10 @@ useEffect(() => {
             throw error;
         }
     };
-
-
     //wrapper
     const logInViaOAuth2 = () => {
-        window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+        console.log("http://localhost:8081/login/oauth2/google")
+        window.location.href = `${API_BASE_URL}/login/oauth2/google`;
 
     };
     const formatDate = (dateString: string) => {
@@ -133,7 +132,7 @@ useEffect(() => {
         localStorage.removeItem("jwtToken");
         setUser(null);
         setJwtToken(null);
-        router.push('/');
+        router.push('/home');
     };
 
 

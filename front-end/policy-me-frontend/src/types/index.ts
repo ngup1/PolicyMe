@@ -38,3 +38,62 @@ export interface ApiResponse {
   success: boolean;
   message: string;
 }
+
+export interface User {
+  userId : string;
+  email : string;
+  firstName: string;
+  lastName : string;
+  createdDate: string;
+  profilePicture: string;
+  age?: number;
+  state?: string;
+  incomeBracket?: string;
+  veteran?: boolean;
+  student?: boolean;
+  smallBusinessOwner?: boolean;
+}
+
+// Bill/Policy types
+export interface Bill {
+  id: string;
+  congress: number;
+  type: string;
+  number: string;
+  title: string;
+  url?: string;
+  originChamber?: string;
+  updateDate?: string;
+  latestAction?: {
+    actionDate: string;
+    text: string;
+  };
+  policyArea?: {
+    name: string;
+  };
+  sponsors?: Array<{
+    bioguideId: string;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    party: string;
+    state: string;
+  }>;
+}
+
+// Demographics for personalized impact
+export interface Demographics {
+  age?: number;
+  state?: string;
+  incomeBracket?: string;
+  veteran?: boolean;
+  student?: boolean;
+  smallBusinessOwner?: boolean;
+}
+
+// MCP Tool response wrapper
+export interface MCPToolResponse<T> {
+  success: boolean;
+  result: T;
+  error?: string;
+}
