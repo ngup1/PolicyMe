@@ -2,22 +2,47 @@
 
 import { useState } from 'react';
 import { Search, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/error-handler';
 
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
+  onSearch?: (query: string) => Promise<void> | void;
 }
 
 export default function SearchBar({
   placeholder = 'Search policies, bills, or topics...',
-  className = ''
+  className = '',
+  onSearch
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', query);
+    
+    if (!query.trim()) {
+      toast.error('Please enter a search query');
+      return;
+    }
+
+    if (onSearch) {
+      setIsSearching(true);
+      try {
+        await onSearch(query.trim());
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        console.error('Search error:', error);
+        toast.error(errorMessage);
+      } finally {
+        setIsSearching(false);
+      }
+    } else {
+      // Fallback: just log for now (when API is integrated, this will be handled by onSearch)
+      console.log('Searching for:', query);
+    }
   };
 
   return (
@@ -43,10 +68,12 @@ export default function SearchBar({
 
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl text-white transition-all hover:opacity-90"
+          disabled={isSearching}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#00132B' }}
+          aria-label="Search"
         >
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className={`w-5 h-5 ${isSearching ? 'animate-pulse' : ''}`} />
         </button>
       </div>
       

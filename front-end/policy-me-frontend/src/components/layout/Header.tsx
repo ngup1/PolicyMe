@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/hover-card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { BookOpen } from 'lucide-react';
+import { getErrorMessage } from '@/lib/error-handler';
+import { toast } from 'sonner';
 
 const trendingIssues = [
   "Healthcare Reform",
@@ -22,6 +24,16 @@ const trendingIssues = [
 export default function Header() {
   const router = useRouter();
   const { user, logOut, formatDate } = useAuth();
+
+  const handleLogout = () => {
+    try {
+      logOut();
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      console.error('Logout error:', error);
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
@@ -76,7 +88,7 @@ export default function Header() {
                       >
                         Edit Profile
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => logOut()}>
+                      <Button size="sm" variant="outline" onClick={handleLogout}>
                         Log Out
                       </Button>
                     </div>

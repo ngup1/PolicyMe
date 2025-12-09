@@ -10,6 +10,8 @@ import { User, MapPin, DollarSign, GraduationCap, Shield, Briefcase, CheckCircle
 import { useAuth } from '@/context/AuthProvider';
 import { useUser } from '@/context/UserProvider';
 import { Demographics } from '@/types';
+import { getErrorMessage } from '@/lib/error-handler';
+import { toast } from 'sonner';
 
 
 
@@ -36,7 +38,9 @@ export default function DemographicsPage() {
       try {
         setForm(JSON.parse(savedDemo));
       } catch (e) {
-        console.error('Failed to parse saved demographics');
+        console.error('Failed to parse saved demographics:', e);
+        // Clear invalid data
+        localStorage.removeItem('demographics');
       }
     }
   }, []);
@@ -57,16 +61,31 @@ export default function DemographicsPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      localStorage.setItem('demographics', JSON.stringify(form));
-      setSaved(true);
-
-      try {
-        await setDemographic(form); // await here
-      } catch (error) {
-        console.error('Failed to save demographics to backend', error);
+      
+      // Validate required fields
+      if (!form.state || !form.incomeBracket) {
+        const errorMsg = 'Please fill in all required fields (State and Income Bracket).';
+        toast.error(errorMsg);
+        return;
       }
 
-      setTimeout(() => router.push('/'), 1500);
+      try {
+        // Save to localStorage first for immediate feedback
+        localStorage.setItem('demographics', JSON.stringify(form));
+        setSaved(true);
+
+        // Then save to backend
+        await setDemographic(form);
+        
+        // Redirect after successful save
+        setTimeout(() => router.push('/'), 1500);
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        console.error('Failed to save demographics to backend:', error);
+        toast.error(errorMessage);
+        setSaved(false);
+        // Don't redirect on error - let user try again
+      }
     };
 
 
