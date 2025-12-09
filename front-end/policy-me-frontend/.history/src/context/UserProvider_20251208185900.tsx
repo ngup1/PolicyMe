@@ -24,12 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const setDemographic = async (val: Demographics) => {
     try{
-      const token = localStorage.getItem("jwtToken");
-      const response = await api.post("/auth/demographic", {...val}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.post("/auth/demographic", {...val});
       const data = response.data;
       toast.success(data.message)
     }

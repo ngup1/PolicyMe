@@ -26,7 +26,6 @@ export default function DemographicsPage() {
     veteran: false,
     student: false,
     smallBusinessOwner: false,
-    zip: 63021,
   });
 
   // Load saved demographics on mount
@@ -118,22 +117,6 @@ export default function DemographicsPage() {
                     className="w-full"
                   />
                 </div>
-                {/* ZIP Code */}
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  ZIP Code
-                </label>
-                <Input
-                  name="zip"
-                  type="text"
-                  placeholder="Enter your ZIP code"
-                  value={form.zip}
-                  onChange={handleChange}
-                  maxLength={5}
-                  className="w-full max-w-xs"
-                />
-              </div>
 
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
