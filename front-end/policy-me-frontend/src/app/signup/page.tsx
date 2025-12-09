@@ -7,8 +7,9 @@ import { SignUpRequest } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthProvider';
-import { API_BASE_URL } from '@/constants';
 import { BookOpen } from 'lucide-react';
+import { getErrorMessage } from '@/lib/error-handler';
+import { toast } from 'sonner';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -29,7 +30,17 @@ export default function SignUpPage() {
 
     // Validate passwords match
     if (formData.password !== confirmPassword) {
-      setError('Passwords do not match. Please try again.');
+      const errorMsg = 'Passwords do not match. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 8) {
+      const errorMsg = 'Password must be at least 8 characters long.';
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
     
@@ -40,8 +51,10 @@ export default function SignUpPage() {
       
       // Redirect to home page
       router.push('/');
-    } catch (err: any) {
-      setError(err.message || 'Failed to create account. Please try again.');
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -190,7 +203,15 @@ export default function SignUpPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={logInViaOAuth2}
+              onClick={() => {
+                try {
+                  logInViaOAuth2();
+                } catch (err: unknown) {
+                  const errorMessage = getErrorMessage(err);
+                  setError(errorMessage);
+                  toast.error(errorMessage);
+                }
+              }}
               disabled={loading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">

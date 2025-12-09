@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthProvider';
 import { toast } from 'sonner';
 import { BookOpen } from 'lucide-react';
+import { getErrorMessage } from '@/lib/error-handler';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,8 +31,10 @@ export default function LoginPage() {
       
       // Redirect to home page
       router.push('/');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -123,7 +126,15 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={logInViaOAuth2}
+              onClick={() => {
+                try {
+                  logInViaOAuth2();
+                } catch (err: unknown) {
+                  const errorMessage = getErrorMessage(err);
+                  setError(errorMessage);
+                  toast.error(errorMessage);
+                }
+              }}
               disabled={loading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">

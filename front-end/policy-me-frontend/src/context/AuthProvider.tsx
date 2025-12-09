@@ -4,6 +4,7 @@ import api from "@/api/axios";
 import { API_BASE_URL } from "@/constants";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { toAppError, getErrorMessage, UnauthorizedError } from "@/lib/error-handler";
 
 export type AuthContextType = {
     user: User | null;
@@ -46,7 +47,8 @@ useEffect(() => {
     window.history.replaceState({}, "", "/");
     router.push('/'); // optional: maybe delay until after user is fetched
   }
-}, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []); // router is stable from next/navigation, no need to include in deps
 
 
 
@@ -64,17 +66,23 @@ useEffect(() => {
                 setUser(data.user);
                 if (data.token && data.token != jwtToken){
                     setJwtToken(data.token);
-
                 }
-                console.log(data);
-
             }
             catch(error){
-                console.error("failed to fetch user info", error);
-                setUser(null);
-
+                const appError = toAppError(error);
+                console.error("Failed to fetch user info:", appError);
+                
+                // If unauthorized, clear token and user
+                if (appError instanceof UnauthorizedError) {
+                    setUser(null);
+                    setJwtToken(null);
+                    localStorage.removeItem("jwtToken");
+                } else {
+                    // For other errors, just log but don't clear user
+                    // User might still be valid, just couldn't refresh
+                    console.warn("Could not refresh user info:", getErrorMessage(appError));
+                }
             }
-
         };
         fetchUser();
     }, [jwtToken])
@@ -102,11 +110,15 @@ useEffect(() => {
 
             setUser(data.user);
             setJwtToken(data.token);
-            toast.success(data.message);
+            toast.success(data.message || "Login successful");
 
-        } catch (error) { //need better error handling here
-            console.error(error);
-            throw error;
+        } catch (error) {
+            const appError = toAppError(error);
+            console.error("Login error:", appError);
+            
+            // Don't show toast here - let the component handle it
+            // This allows components to show custom error messages
+            throw appError;
         }
     };
 
@@ -145,12 +157,14 @@ useEffect(() => {
 
             setUser(data.user);
             setJwtToken(data.token);
+            toast.success(data.message || "Account created successfully");
 
-            toast.success(data.message);
-
-        } catch (error) { //need better error handling here
-            console.error(error);
-            throw error;
+        } catch (error) {
+            const appError = toAppError(error);
+            console.error("Signup error:", appError);
+            
+            // Don't show toast here - let the component handle it
+            throw appError;
         }
     }
 
