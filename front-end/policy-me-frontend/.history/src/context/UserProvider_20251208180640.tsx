@@ -1,5 +1,4 @@
 import { createContext } from "react";
-import { useState, useContext } from "react";
 
 
 export type UserContextType = {

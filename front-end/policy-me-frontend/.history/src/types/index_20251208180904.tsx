@@ -38,3 +38,13 @@ export interface ApiResponse {
   success: boolean;
   message: string;
 }
+
+export interface User {
+  userId : string;
+  email : string;
+  firstName: string;
+  lastName : string;
+  createdDate: string;
+  profilePicture: string;
+
+}
