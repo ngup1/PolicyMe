@@ -6,18 +6,31 @@ import { Search, ArrowRight } from 'lucide-react';
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
+  onSearch?: (query: string) => void;
+  loading?: boolean;
 }
 
 export default function SearchBar({
   placeholder = 'Search policies, bills, or topics...',
-  className = ''
+  className = '',
+  onSearch,
+  loading = false
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', query);
+    if (query.trim() && onSearch) {
+      onSearch(query.trim());
+    }
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    if (onSearch) {
+      onSearch(''); // Reset to show recent bills
+    }
   };
 
   return (
@@ -34,19 +47,37 @@ export default function SearchBar({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
+          disabled={loading}
           className="w-full pl-12 pr-14 py-4 rounded-2xl border-2 border-border bg-white text-foreground 
                      placeholder:text-muted-foreground
                      focus:outline-none focus:border-foreground/20 focus:shadow-lg focus:shadow-black/5
-                     transition-all duration-200"
+                     transition-all duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Search policies"
         />
 
+        {query && !loading && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute right-14 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+        )}
+
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl text-white transition-all hover:opacity-90"
+          disabled={loading || !query.trim()}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: '#00132B' }}
         >
-          <ArrowRight className="w-5 h-5" />
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <ArrowRight className="w-5 h-5" />
+          )}
         </button>
       </div>
       

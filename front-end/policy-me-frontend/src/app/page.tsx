@@ -1,6 +1,7 @@
 // Home page - main entry point
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from "@/components/layout/Header";
 import MainContent from "@/components/layout/MainContent";
@@ -12,12 +13,17 @@ import { LeftContent, RightContent } from "@/components/content";
 import { User, ArrowRight } from 'lucide-react';
 
 export default function Home() {
+  const router = useRouter();
   const [hasProfile, setHasProfile] = useState(true); // default true to avoid flash
   
   useEffect(() => {
     const demo = localStorage.getItem('demographics');
     setHasProfile(!!demo);
   }, []);
+
+  const handleSearch = (query: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -68,7 +74,7 @@ export default function Home() {
             </p>
             
             <div className="max-w-xl mx-auto">
-              <SearchBar />
+              <SearchBar onSearch={handleSearch} />
             </div>
             
             {/* Quick stats */}

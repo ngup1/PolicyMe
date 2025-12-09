@@ -24,8 +24,15 @@ public class UserDTO {
     @NotBlank
     private Instant createdDate;
 
-
     private String profilePicture;
+
+    // Demographics fields
+    private Integer age;
+    private String state;
+    private String incomeBracket;
+    private Boolean veteran;
+    private Boolean student;
+    private Boolean smallBusinessOwner;
 
     public UserDTO(User user) {
         this.userId = user.getUserId();
@@ -34,5 +41,11 @@ public class UserDTO {
         this.lastName = user.getLastName();
         this.createdDate = user.getCreatedDate();
         this.profilePicture = user.getProfilePicture();
+        this.age = user.getAge();
+        this.state = user.getState();
+        this.incomeBracket = user.getIncomeBracket();
+        this.veteran = user.getVeteran();
+        this.student = user.getStudent();
+        this.smallBusinessOwner = user.getSmallBusinessOwner();
     }
 }

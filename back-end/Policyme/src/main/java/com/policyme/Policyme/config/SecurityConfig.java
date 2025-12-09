@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Open endpoints
                         .requestMatchers("/auth/**", "/oauth2/**", "/auth/login", "/auth/signup", "/login/oauth2/code/**").permitAll()
+                        // MCP tool endpoints - allow unauthenticated access
+                        .requestMatchers("/mcp/tools", "/mcp/invoke", "/mcp/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
