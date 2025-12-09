@@ -1,14 +1,16 @@
-'use client';
+"use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthProvider';
+
 export default function OAuthSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string>('');
-  const { setJwtToken  } = useAuth();
-
+  const { setJwtToken } = useAuth();
 
   if (error) {
     return (

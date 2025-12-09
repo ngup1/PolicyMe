@@ -2,4 +2,4 @@
 
 export { default as PolicyCard } from './PolicyCard';
 export { default as PolicyDescription } from './PolicyDescription';
-export { default as SearchResults } from './SearchResults';
+// export { default as SearchResults } from './SearchResults';

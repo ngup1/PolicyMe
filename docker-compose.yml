@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  backend:
+    build: ./back-end/Policyme
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      MONGO_URL: mongodb://mongo:27017/congressDB
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./front-end/policy-me-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8081
+
+  mongo:
+    image: mongo:7.0
+    container_name: policyme-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
